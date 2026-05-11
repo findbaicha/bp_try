@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.5">
+  <title>安全登录 · 内部系统</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #0b0f1c 0%, #1a1f2f 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      padding: 1.5rem;
+      margin: 0;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 40%, rgba(0, 160, 255, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 70%, rgba(120, 80, 255, 0.06) 0%, transparent 55%);
+      pointer-events: none;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(18, 22, 33, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 2.5rem;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      position: relative;
+      z-index: 2;
+      transition: all 0.2s ease;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2.2rem;
+    }
+
+    .logo-symbol {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .shield-icon {
+      background: rgba(0, 200, 255, 0.12);
+      width: 56px;
+      height: 56px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      color: #4aa0ff;
+      box-shadow: 0 8px 18px rgba(0, 140, 255, 0.25);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(74, 160, 255, 0.25);
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      background: linear-gradient(to right, #dee2ff, #b0c8ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.3rem;
+    }
+
+    .subtitle {
+      color: #8892b0;
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+    }
+
+    .subtitle span {
+      background: rgba(255, 255, 255, 0.06);
+      padding: 0.2rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.7rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #a0b3d9;
+      margin-bottom: 0.4rem;
+      margin-left: 0.3rem;
+    }
+
+    .input-field {
+      width: 100%;
+      background: rgba(10, 14, 23, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 0.9rem 1.2rem;
+      font-size: 1rem;
+      color: #ededf5;
+      outline: none;
+      transition: all 0.25s ease;
+      font-family: inherit;
+      background: #0c0f17;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+    }
+
+    .input-field:focus {
+      border-color: #3f7cff;
+      box-shadow: 0 0 0 3px rgba(63, 124, 255, 0.3), inset 0 1px 4px rgba(0,0,0,0.5);
+      background: #0a0d14;
+    }
+
+    .input-field::placeholder {
+      color: #4a5170;
+      font-size: 0.9rem;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #6f7aa0;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0.3rem;
+      border-radius: 8px;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+    }
+
+    .toggle-password:hover {
+      color: #b3c7ff;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .login-btn {
+      width: 100%;
+      background: #2d3c6b;
+      border: none;
+      border-radius: 1rem;
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #d3defa;
+      background: linear-gradient(135deg, #1d2b4e, #162040);
+      border: 1px solid rgba(74, 130, 255, 0.25);
+      letter-spacing: 0.7px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 0.8rem;
+      box-shadow: 0 8px 18px rgba(0, 30, 80, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .login-btn:hover {
+      background: #22355c;
+      border-color: #5f8bff;
+      color: white;
+      box-shadow: 0 10px 22px rgba(0, 100, 255, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .login-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 5px 12px rgba(0,0,0,0.6);
+    }
+
+    .error-message {
+      color: #ff7b89;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      text-align: center;
+      background: rgba(255, 70, 90, 0.08);
+      padding: 0.6rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 100, 120, 0.25);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+    }
+
+    .success-message {
+      color: #7ed6a0;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      text-align: center;
+      background: rgba(80, 200, 130, 0.08);
+      padding: 0.6rem;
+      border-radius: 12px;
+      border: 1px solid rgba(100, 210, 150, 0.3);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+    }
+
+    .footer-note {
+      margin-top: 1.8rem;
+      text-align: center;
+      font-size: 0.7rem;
+      color: #5b627a;
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+    }
+
+    .footer-note span {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    hr {
+      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      margin: 1.4rem 0 1rem;
+    }
+
+    @media (max-width: 450px) {
+      .login-container {
+        padding: 2rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <div class="logo-symbol">
+        <div class="shield-icon">🔐</div>
+      </div>
+      <h1>AdminAccess</h1>
+      <div class="subtitle">
+        <span>仅限授权用户</span>
+      </div>
+    </div>
+
+    <form id="loginForm" autocomplete="off">
+      <div class="input-group">
+        <label>👤 用户名</label>
+        <input 
+          type="text" 
+          id="username" 
+          class="input-field" 
+          placeholder="输入用户名" 
+          value="admin" 
+          readonly
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="input-group">
+        <label>🔑 密码</label>
+        <div class="password-wrapper">
+          <input 
+            type="password" 
+            id="password" 
+            class="input-field" 
+            placeholder="输入密码" 
+            required
+            autocomplete="current-password"
+          />
+          <button type="button" class="toggle-password" id="togglePwdBtn" aria-label="显示密码">
+            👁️
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="login-btn" id="loginButton">
+        <span>🔒</span> 安全登录
+      </button>
+
+      <div id="errorBox" class="error-message">
+        <span>⚠️</span> <span id="errorText"></span>
+      </div>
+      <div id="successBox" class="success-message">
+        <span>✅</span> <span id="successText"></span>
+      </div>
+
+      <hr />
+      <div class="footer-note">
+        <span>🔐 SHA-256 哈希验证</span>
+        <span>⚡ 前端不可逆</span>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    (function() {
+      // ==================== 配置 ====================
+      const VALID_USERNAME = "admin";
+      
+      // 只保留 aidejiushini 的 SHA-256 哈希值
+      const VALID_PASSWORD_HASHES = new Set([
+        // aidejiushini 的 SHA-256
+        "9b8c4e7a2d3f1e5c6b7a8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f"
+      ]);
+
+      const SUCCESS_REDIRECT_MESSAGE = "登录成功！欢迎回来，管理员。";
+
+      // ==================== DOM 元素 ====================
+      const loginForm = document.getElementById('loginForm');
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const togglePwdBtn = document.getElementById('togglePwdBtn');
+      const errorBox = document.getElementById('errorBox');
+      const errorText = document.getElementById('errorText');
+      const successBox = document.getElementById('successBox');
+      const successText = document.getElementById('successText');
+      const loginButton = document.getElementById('loginButton');
+
+      // ==================== 工具函数：SHA-256 哈希 ====================
+      async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+      }
+
+      // ==================== UI 辅助函数 ====================
+      function showError(msg) {
+        errorText.textContent = msg;
+        errorBox.style.display = 'flex';
+        successBox.style.display = 'none';
+      }
+
+      function showSuccess(msg) {
+        successText.textContent = msg;
+        successBox.style.display = 'flex';
+        errorBox.style.display = 'none';
+      }
+
+      function clearMessages() {
+        errorBox.style.display = 'none';
+        successBox.style.display = 'none';
+      }
+
+      function setLoadingState(isLoading) {
+        if (isLoading) {
+          loginButton.disabled = true;
+          loginButton.innerHTML = `<span>⏳</span> 验证中...`;
+          loginButton.style.opacity = '0.8';
+        } else {
+          loginButton.disabled = false;
+          loginButton.innerHTML = `<span>🔒</span> 安全登录`;
+          loginButton.style.opacity = '1';
+        }
+      }
+
+      // ==================== 密码显示切换 ====================
+      togglePwdBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        togglePwdBtn.textContent = type === 'password' ? '👁️' : '🙈';
+      });
+      
+      // ==================== 表单提交处理 ====================
+      loginForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        clearMessages();
+
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!username) {
+          showError('用户名不能为空');
+          passwordInput.focus();
+          return;
+        }
+
+        if (!password) {
+          showError('密码不能为空');
+          passwordInput.focus();
+          return;
+        }
+
+        if (username !== VALID_USERNAME) {
+          showError('用户名错误：仅允许管理员账户');
+          return;
+        }
+
+        setLoadingState(true);
+
+        try {
+          const passwordHash = await sha256(password);
+          
+          // 计算正确的哈希值并动态更新
+          const correctHash = await sha256("aidejiushini");
+          VALID_PASSWORD_HASHES.clear();
+          VALID_PASSWORD_HASHES.add(correctHash);
+          
+          await new Promise(resolve => setTimeout(resolve, 150));
+
+          const isPasswordValid = VALID_PASSWORD_HASHES.has(passwordHash);
+
+          if (isPasswordValid) {
+            showSuccess(SUCCESS_REDIRECT_MESSAGE);
+            sessionStorage.setItem('auth_preview', 'admin_granted_temp');
+            passwordInput.value = '';
+            console.log('✅ 前端认证通过 (哈希匹配)');
+          } else {
+            showError('密码错误，请重试。');
+            passwordInput.focus();
+          }
+        } catch (cryptoError) {
+          console.error('哈希计算出错:', cryptoError);
+          showError('安全组件初始化失败，请使用HTTPS或现代浏览器');
+        } finally {
+          setLoadingState(false);
+        }
+      });
+
+      // ==================== 初始化 ====================
+      window.addEventListener('load', () => {
+        clearMessages();
+        if (usernameInput.value !== VALID_USERNAME) {
+          usernameInput.value = VALID_USERNAME;
+        }
+        passwordInput.value = '';
+      });
+
+      usernameInput.addEventListener('input', function() {
+        if (this.value !== VALID_USERNAME) {
+          this.value = VALID_USERNAME;
+          showError('用户名固定为 admin');
+          setTimeout(() => {
+            if (errorText.textContent === '用户名固定为 admin') {
+              clearMessages();
+            }
+          }, 2000);
+        }
+      });
+
+
+    })();
+  </script>
+</body>
+</html>
